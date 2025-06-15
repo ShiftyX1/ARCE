@@ -99,22 +99,22 @@ public class GameMap {
             new Wall(new Vector2D(50, 250), new Vector2D(50, 50))      // Левая
         };
         
-        mainWalls[0].setTextureId(1); // Красная
-        mainWalls[1].setTextureId(2); // Синяя
-        mainWalls[2].setTextureId(3); // Зеленая
-        mainWalls[3].setTextureId(4); // Желтая
+        mainWalls[0].setTextureId(1); // wall_1
+        mainWalls[1].setTextureId(2); // wall_2
+        mainWalls[2].setTextureId(3); // wall_3
+        mainWalls[3].setTextureId(4); // wall_4
         
         Wall pillar1 = new Wall(new Vector2D(150, 100), new Vector2D(170, 100));
-        pillar1.setTextureId(5); // Пурпурная
+        pillar1.setTextureId(5); // wall_5
         
         Wall pillar2 = new Wall(new Vector2D(170, 100), new Vector2D(170, 120));
-        pillar2.setTextureId(5);
+        pillar2.setTextureId(5); // wall_5
         
         Wall pillar3 = new Wall(new Vector2D(170, 120), new Vector2D(150, 120));
-        pillar3.setTextureId(5);
+        pillar3.setTextureId(5); // wall_5
         
         Wall pillar4 = new Wall(new Vector2D(150, 120), new Vector2D(150, 100));
-        pillar4.setTextureId(5);
+        pillar4.setTextureId(5); // wall_5
         
         for (Wall wall : mainWalls) {
             mainRoom.addWall(wall);

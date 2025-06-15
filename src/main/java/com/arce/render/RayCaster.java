@@ -5,17 +5,24 @@ import com.arce.math.Vector2D;
 import com.arce.world.GameMap;
 import com.arce.world.Wall;
 import com.arce.world.Sector;
+import com.arce.core.managers.SpriteManager;
 import com.arce.logger.EngineLogger;
 
 public class RayCaster {
     private final EngineLogger logger;
     private GameMap gameMap;
+    private SpriteManager spriteManager;
     private double maxRenderDistance;
     
     public RayCaster(GameMap gameMap) {
         this.logger = new EngineLogger(RayCaster.class);
         this.gameMap = gameMap;
         this.maxRenderDistance = 1000.0;
+    }
+    
+    public void setSpriteManager(SpriteManager spriteManager) {
+        this.spriteManager = spriteManager;
+        logger.logInfo("Sprite manager connected to raycaster");
     }
     
     public RaycastColumn[] castRays(Camera camera) {
@@ -36,11 +43,8 @@ public class RayCaster {
         if (result == null) {
             return new RaycastColumn(maxRenderDistance, null, null, ray, camera);
         }
-        
         double correctedDistance = correctFishEyeDistance(result.distance, ray, camera);
-        
         Sector currentSector = gameMap.findSector(camera.getPosition());
-        
         return new RaycastColumn(correctedDistance, result.hitWall, currentSector, ray, camera);
     }
     
@@ -110,14 +114,15 @@ public class RayCaster {
             
             Vector2D hitPoint = ray.getPoint(distance);
             Vector2D wallStart = hitWall.getLine().start;
-            Vector2D wallEnd = hitWall.getLine().end;
+            // Vector2D wallEnd = hitWall.getLine().end;
             
-            double wallLength = wallStart.distanceTo(wallEnd);
+            // double wallLength = wallStart.distanceTo(wallEnd);
             double hitPosition = wallStart.distanceTo(hitPoint);
             
-            wallTextureX = hitPosition / wallLength;
+            wallTextureX = hitPosition;
             
-            wallTextureX = wallTextureX - Math.floor(wallTextureX);
+            // Не нормализуем! Пусть текстура повторяется по длине стены
+            // wallTextureX = wallTextureX - Math.floor(wallTextureX);
         }
         
         public boolean hasHit() {
@@ -142,4 +147,6 @@ public class RayCaster {
     
     public GameMap getGameMap() { return gameMap; }
     public void setGameMap(GameMap gameMap) { this.gameMap = gameMap; }
+    
+    public SpriteManager getSpriteManager() { return spriteManager; }
 }

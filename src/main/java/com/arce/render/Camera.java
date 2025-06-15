@@ -111,7 +111,7 @@ public class Camera {
     
     @Override
     public String toString() {
-        return String.format("Camera(pos: %s, angle: %.2f°, fov: %.1f°)", 
+        return String.format("Camera(pos: %s, angle: %.2f, fov: %.1f)", 
                            position, Math.toDegrees(angle), Math.toDegrees(fov));
     }
 }

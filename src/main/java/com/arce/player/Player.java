@@ -35,7 +35,7 @@ public class Player {
         
         this.moveSpeed = 150.0;
         this.turnSpeed = Math.toRadians(120);
-        this.strafeSpeed = 100.0;
+        this.strafeSpeed = 150.0;
         
         this.velocity = new Vector2D(0, 0);
         this.onGround = true;
@@ -207,7 +207,7 @@ public class Player {
     
     @Override
     public String toString() {
-        return String.format("Player(pos: %s, sector: %s, angle: %.1f°)", 
+        return String.format("Player(pos: %s, sector: %s, angle: %.1f)", 
                            getPosition(), 
                            currentSector != null ? currentSector.getId() : "none",
                            Math.toDegrees(camera.getAngle()));
@@ -231,7 +231,7 @@ public class Player {
         
         @Override
         public String toString() {
-            return String.format("PlayerState(pos: %s, angle: %.1f°, sector: %s)", 
+            return String.format("PlayerState(pos: %s, angle: %.1f, sector: %s)", 
                                position, Math.toDegrees(angle), 
                                sector != null ? sector.getId() : "none");
         }

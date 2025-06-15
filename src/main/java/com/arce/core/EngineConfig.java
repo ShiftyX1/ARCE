@@ -20,6 +20,7 @@ public class EngineConfig {
     
     private double playerMoveSpeed = 5.0;
     private double playerTurnSpeed = 3.0;
+    private double playerStrafeSpeed = 150.0;
     private double mouseSensitivity = 1.0;
     
     private boolean debugMode = false;
@@ -67,6 +68,7 @@ public class EngineConfig {
         
         playerMoveSpeed = getDoubleProperty("player.move_speed", playerMoveSpeed);
         playerTurnSpeed = getDoubleProperty("player.turn_speed", playerTurnSpeed);
+        playerStrafeSpeed = getDoubleProperty("player.strafe_speed", playerStrafeSpeed);
         mouseSensitivity = getDoubleProperty("player.mouse_sensitivity", mouseSensitivity);
         
         debugMode = getBooleanProperty("debug.enabled", debugMode);
@@ -89,6 +91,7 @@ public class EngineConfig {
             
             properties.setProperty("player.move_speed", String.valueOf(playerMoveSpeed));
             properties.setProperty("player.turn_speed", String.valueOf(playerTurnSpeed));
+            properties.setProperty("player.strafe_speed", String.valueOf(playerStrafeSpeed));
             properties.setProperty("player.mouse_sensitivity", String.valueOf(mouseSensitivity));
             
             properties.setProperty("debug.enabled", String.valueOf(debugMode));
@@ -172,6 +175,9 @@ public class EngineConfig {
     
     public double getPlayerTurnSpeed() { return playerTurnSpeed; }
     public void setPlayerTurnSpeed(double playerTurnSpeed) { this.playerTurnSpeed = playerTurnSpeed; }
+    
+    public double getPlayerStrafeSpeed() { return playerStrafeSpeed; }
+    public void setPlayerStrafeSpeed(double playerStrafeSpeed) { this.playerStrafeSpeed = playerStrafeSpeed; }
     
     public double getMouseSensitivity() { return mouseSensitivity; }
     public void setMouseSensitivity(double mouseSensitivity) { this.mouseSensitivity = mouseSensitivity; }

@@ -1,0 +1,106 @@
+{
+  "name": "Test Map",
+  "author": "ARCE Editor",
+  "description": "Тестовая карта для демонстрации возможностей движка",
+  "version": 1,
+  "playerStart": {
+    "x": 200.0,
+    "y": 150.0,
+    "angle": 0.0
+  },
+  "sectors": [
+    {
+      "id": 1,
+      "floorHeight": 0.0,
+      "ceilingHeight": 64.0,
+      "floorTextureId": 0,
+      "ceilingTextureId": 0,
+      "lightLevel": 200,
+      "wallIds": [1, 2, 3, 4]
+    },
+    {
+      "id": 2,
+      "floorHeight": 16.0,
+      "ceilingHeight": 80.0,
+      "floorTextureId": 1,
+      "ceilingTextureId": 1,
+      "lightLevel": 150,
+      "wallIds": [5, 6, 7, 8]
+    }
+  ],
+  "walls": [
+    {
+      "id": 1,
+      "start": { "x": 50.0, "y": 50.0 },
+      "end": { "x": 350.0, "y": 50.0 },
+      "textureId": 1,
+      "solid": true,
+      "frontSectorId": 1
+    },
+    {
+      "id": 2,
+      "start": { "x": 350.0, "y": 50.0 },
+      "end": { "x": 350.0, "y": 250.0 },
+      "textureId": 2,
+      "solid": true,
+      "frontSectorId": 1
+    },
+    {
+      "id": 3,
+      "start": { "x": 350.0, "y": 250.0 },
+      "end": { "x": 50.0, "y": 250.0 },
+      "textureId": 3,
+      "solid": true,
+      "frontSectorId": 1
+    },
+    {
+      "id": 4,
+      "start": { "x": 50.0, "y": 250.0 },
+      "end": { "x": 50.0, "y": 50.0 },
+      "textureId": 4,
+      "solid": true,
+      "frontSectorId": 1
+    },
+    {
+      "id": 5,
+      "start": { "x": 400.0, "y": 100.0 },
+      "end": { "x": 500.0, "y": 100.0 },
+      "textureId": 5,
+      "solid": true,
+      "frontSectorId": 2
+    },
+    {
+      "id": 6,
+      "start": { "x": 500.0, "y": 100.0 },
+      "end": { "x": 500.0, "y": 200.0 },
+      "textureId": 5,
+      "solid": true,
+      "frontSectorId": 2
+    },
+    {
+      "id": 7,
+      "start": { "x": 500.0, "y": 200.0 },
+      "end": { "x": 400.0, "y": 200.0 },
+      "textureId": 5,
+      "solid": true,
+      "frontSectorId": 2
+    },
+    {
+      "id": 8,
+      "start": { "x": 400.0, "y": 200.0 },
+      "end": { "x": 400.0, "y": 100.0 },
+      "textureId": 5,
+      "solid": true,
+      "frontSectorId": 2
+    },
+    {
+      "id": 9,
+      "start": { "x": 350.0, "y": 140.0 },
+      "end": { "x": 400.0, "y": 140.0 },
+      "textureId": 0,
+      "solid": false,
+      "frontSectorId": 1,
+      "backSectorId": 2
+    }
+  ]
+} 

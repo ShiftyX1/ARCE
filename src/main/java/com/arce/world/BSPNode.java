@@ -33,12 +33,22 @@ public class BSPNode {
     }
     
     public static BSPNode buildBSP(List<Wall> walls, int maxWallsPerNode) {
+        return buildBSPRecursive(walls, maxWallsPerNode, 0, 50);
+    }
+    
+    private static BSPNode buildBSPRecursive(List<Wall> walls, int maxWallsPerNode, int depth, int maxDepth) {
+        if (depth >= maxDepth) {
+            logger.logInfo("BSP: Max depth reached ({}), creating leaf with {} walls", maxDepth, walls.size());
+            return new BSPNode(walls);
+        }
+        
         if (walls.size() <= maxWallsPerNode) {
             return new BSPNode(walls);
         }
         
         Line2D splitter = chooseBestSplitter(walls);
         if (splitter == null) {
+            logger.logInfo("BSP: No suitable splitter found, creating leaf with {} walls", walls.size());
             return new BSPNode(walls);
         }
         
@@ -50,17 +60,27 @@ public class BSPNode {
             classifyWall(wall, splitter, frontWalls, backWalls, colinearWalls);
         }
         
-        frontWalls.addAll(colinearWalls);
+        if (frontWalls.size() <= backWalls.size()) {
+            frontWalls.addAll(colinearWalls);
+        } else {
+            backWalls.addAll(colinearWalls);
+        }
+        
+        if (frontWalls.size() >= walls.size() || backWalls.size() >= walls.size()) {
+            logger.logInfo("BSP: No progress made (front: {}, back: {}, total: {}), creating leaf", 
+                         frontWalls.size(), backWalls.size(), walls.size());
+            return new BSPNode(walls);
+        }
         
         BSPNode frontChild = null;
         BSPNode backChild = null;
         
         if (!frontWalls.isEmpty()) {
-            frontChild = buildBSP(frontWalls, maxWallsPerNode);
+            frontChild = buildBSPRecursive(frontWalls, maxWallsPerNode, depth + 1, maxDepth);
         }
         
         if (!backWalls.isEmpty()) {
-            backChild = buildBSP(backWalls, maxWallsPerNode);
+            backChild = buildBSPRecursive(backWalls, maxWallsPerNode, depth + 1, maxDepth);
         }
         
         return new BSPNode(splitter, frontChild, backChild);
@@ -77,6 +97,29 @@ public class BSPNode {
             if (score < bestScore) {
                 bestScore = score;
                 bestSplitter = candidate;
+            }
+        }
+        
+        if (bestSplitter != null) {
+            int frontCount = 0;
+            int backCount = 0;
+            
+            for (Wall wall : walls) {
+                WallClassification classification = classifyWallRelativeToLine(wall, bestSplitter);
+                if (classification == WallClassification.FRONT) {
+                    frontCount++;
+                } else if (classification == WallClassification.BACK) {
+                    backCount++;
+                } else if (classification == WallClassification.SPANNING) {
+                    frontCount++;
+                    backCount++;
+                }
+            }
+            
+            if (frontCount == 0 || backCount == 0) {
+                logger.logInfo("BSP: Best splitter doesn't actually split walls (front: {}, back: {})", 
+                             frontCount, backCount);
+                return null;
             }
         }
         

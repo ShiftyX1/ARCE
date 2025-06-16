@@ -1,6 +1,7 @@
 package com.arce.core;
 
 import com.arce.logger.EngineLogger;
+import com.arce.core.console.GameConsole;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -18,6 +19,7 @@ public class Window extends JPanel implements KeyListener {
     private boolean[] keys = new boolean[256];
     private volatile boolean closeRequested = false;
     private BufferedImage currentFrame;
+    private GameConsole gameConsole;
     
     public Window(int width, int height, String title) {
         this.logger = new EngineLogger(Window.class);
@@ -31,16 +33,18 @@ public class Window extends JPanel implements KeyListener {
     private void initWindow(String title) {
         frame = new JFrame(title);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(width, height);
-        frame.setLocationRelativeTo(null);
         frame.setResizable(false);
         
         this.setPreferredSize(new Dimension(width, height));
+        this.setSize(width, height);
         this.setFocusable(true);
         this.addKeyListener(this);
+        this.setBackground(Color.BLACK);
+        this.setLayout(null);
         
         frame.add(this);
         frame.pack();
+        frame.setLocationRelativeTo(null);
         
         frame.addWindowListener(new WindowAdapter() {
             @Override
@@ -49,6 +53,18 @@ public class Window extends JPanel implements KeyListener {
                 closeRequested = true;
             }
         });
+    }
+    
+    public void setGameConsole(GameConsole console) {
+        this.gameConsole = console;
+        
+        console.setBounds(0, 0, width, height / 2);
+        console.setVisible(false);
+        
+        this.add(console);
+        this.setComponentZOrder(console, 0);
+        
+        logger.logInfo("Game console integrated into window");
     }
     
     public void show() {
@@ -86,11 +102,17 @@ public class Window extends JPanel implements KeyListener {
             
             g.setColor(Color.GREEN);
             g.setFont(new Font("Arial", Font.BOLD, 24));
-            g.drawString("ARCE Engine Loading...", width/2 - 120, height/2);
+            g.drawString("ARCE Engine", width/2 - 80, height/2 - 40);
             
             g.setColor(Color.WHITE);
-            g.setFont(new Font("Arial", Font.PLAIN, 14));
-            g.drawString("WASD - Move, Arrows/QE - Turn, ESC - Exit", width/2 - 140, height/2 + 40);
+            g.setFont(new Font("Arial", Font.PLAIN, 16));
+            g.drawString("Нажмите ` для открытия консоли", width/2 - 120, height/2);
+            g.drawString("Загрузите карту через консоль", width/2 - 110, height/2 + 20);
+            
+            g.setColor(Color.LIGHT_GRAY);
+            g.setFont(new Font("Arial", Font.PLAIN, 12));
+            g.drawString("Команды: maps, map <название>, testmap", width/2 - 140, height/2 + 50);
+            g.drawString("WASD - Move, Arrows/QE - Turn, M - Map, ESC - Exit", width/2 - 160, height/2 + 70);
         }
     }
     
@@ -102,6 +124,14 @@ public class Window extends JPanel implements KeyListener {
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() < keys.length) {
             keys[e.getKeyCode()] = true;
+        }
+        
+        if (e.getKeyCode() == KeyEvent.VK_BACK_QUOTE) {
+            if (gameConsole != null) {
+                gameConsole.toggleConsole();
+                e.consume();
+                return;
+            }
         }
         
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {

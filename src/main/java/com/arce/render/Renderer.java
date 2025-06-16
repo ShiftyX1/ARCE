@@ -429,6 +429,56 @@ public class Renderer {
     public int getScreenHeight() { return screenHeight; }
     public BufferedImage getFrameBuffer() { return frameBuffer; }
     
+    public BufferedImage renderNoMapScreen() {
+        clearScreen();
+        
+        graphics.setColor(new Color(32, 32, 48)); // Темно-синий фон
+        graphics.fillRect(0, 0, screenWidth, screenHeight);
+        
+        graphics.setColor(Color.WHITE);
+        graphics.setFont(new Font("Arial", Font.BOLD, 32));
+        FontMetrics fm = graphics.getFontMetrics();
+        String title = "ARCE Engine";
+        int titleX = (screenWidth - fm.stringWidth(title)) / 2;
+        graphics.drawString(title, titleX, screenHeight / 2 - 100);
+        
+        graphics.setColor(Color.CYAN);
+        graphics.setFont(new Font("Arial", Font.PLAIN, 18));
+        fm = graphics.getFontMetrics();
+        String instruction = "Press ` (tilde) to open the console";
+        int instX = (screenWidth - fm.stringWidth(instruction)) / 2;
+        graphics.drawString(instruction, instX, screenHeight / 2 - 40);
+        
+        graphics.setColor(Color.LIGHT_GRAY);
+        graphics.setFont(new Font("Arial", Font.PLAIN, 14));
+        fm = graphics.getFontMetrics();
+        
+        String[] commands = {
+            "Console commands:",
+            "maps - list maps",
+            "map <name> - load map", 
+            "testmap - load test map",
+            "help - show commands"
+        };
+        
+        int startY = screenHeight / 2 + 20;
+        for (int i = 0; i < commands.length; i++) {
+            int cmdX = (screenWidth - fm.stringWidth(commands[i])) / 2;
+            graphics.drawString(commands[i], cmdX, startY + i * 20);
+        }
+        
+        long time = System.currentTimeMillis();
+        int dots = (int)((time / 500) % 4);
+        String loading = "Waiting for map to load" + ".".repeat(dots);
+        graphics.setColor(Color.YELLOW);
+        graphics.setFont(new Font("Arial", Font.ITALIC, 16));
+        fm = graphics.getFontMetrics();
+        int loadX = (screenWidth - fm.stringWidth(loading)) / 2;
+        graphics.drawString(loading, loadX, screenHeight - 60);
+        
+        return frameBuffer;
+    }
+
     @Override
     protected void finalize() {
         if (graphics != null) {

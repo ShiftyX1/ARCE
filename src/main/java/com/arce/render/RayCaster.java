@@ -31,27 +31,21 @@ public class RayCaster {
         
         for (int x = 0; x < screenWidth; x++) {
             Ray2D ray = camera.createRay(x);
-            columns[x] = castSingleRay(ray, camera);
+            columns[x] = castSingleRay(ray, camera, x);
         }
         
         return columns;
     }
     
-    public RaycastColumn castSingleRay(Ray2D ray, Camera camera) {
+    public RaycastColumn castSingleRay(Ray2D ray, Camera camera, int screenX) {
         GameMap.RaycastResult result = gameMap.raycast(ray, maxRenderDistance);
         
         if (result == null) {
-            return new RaycastColumn(maxRenderDistance, null, null, ray, camera);
+            return new RaycastColumn(maxRenderDistance, null, null, ray, camera, screenX);
         }
-        double correctedDistance = correctFishEyeDistance(result.distance, ray, camera);
+        
         Sector currentSector = gameMap.findSector(camera.getPosition());
-        return new RaycastColumn(correctedDistance, result.hitWall, currentSector, ray, camera);
-    }
-    
-    private double correctFishEyeDistance(double distance, Ray2D ray, Camera camera) {
-        Vector2D cameraDirection = camera.getDirection();
-        double cosAngle = ray.direction.dot(cameraDirection);
-        return distance * cosAngle;
+        return new RaycastColumn(result.distance, result.hitWall, currentSector, ray, camera, screenX);
     }
     
     public static class RaycastColumn {
@@ -60,18 +54,20 @@ public class RayCaster {
         public Sector currentSector;
         public Ray2D ray;
         public Camera camera;
+        public int screenX;
         
         public int wallHeight;
         public int wallTop;
         public int wallBottom;
         public double wallTextureX;
         
-        public RaycastColumn(double distance, Wall hitWall, Sector currentSector, Ray2D ray, Camera camera) {
+        public RaycastColumn(double distance, Wall hitWall, Sector currentSector, Ray2D ray, Camera camera, int screenX) {
             this.distance = distance;
             this.hitWall = hitWall;
             this.currentSector = currentSector;
             this.ray = ray;
             this.camera = camera;
+            this.screenX = screenX;
             
             calculateWallProjection();
         }
@@ -88,20 +84,36 @@ public class RayCaster {
             int screenHeight = camera.getScreenHeight();
             double cameraHeight = camera.getHeight();
             
-            double worldWallHeight = currentSector.getWallHeight();
+            double floorHeight = currentSector.getFloorHeight();
+            double ceilingHeight = currentSector.getCeilingHeight();
             
-            if (distance > 0.1) {
-                wallHeight = (int) (worldWallHeight * screenHeight / distance);
+            Vector2D cameraDirection = camera.getDirection();
+            double cosAngle = ray.direction.dot(cameraDirection);
+            double perpDistance = distance * cosAngle;
+            
+            if (perpDistance > 0.1) {
+                double projectionHeight = screenHeight / perpDistance;
+                
+                double worldWallHeight = ceilingHeight - floorHeight;
+                wallHeight = (int)(worldWallHeight * projectionHeight);
+                
+                double wallMidHeight = (floorHeight + ceilingHeight) / 2.0;
+                double verticalOffset = (cameraHeight - wallMidHeight) * projectionHeight;
+                
+                int wallCenter = screenHeight / 2 + (int)verticalOffset;
+                
+                wallTop = wallCenter - wallHeight / 2;
+                wallBottom = wallCenter + wallHeight / 2;
             } else {
                 wallHeight = screenHeight;
+                wallTop = 0;
+                wallBottom = screenHeight - 1;
             }
-            
-            int wallCenter = screenHeight / 2 + (int) ((cameraHeight - currentSector.getFloorHeight() - worldWallHeight / 2) * screenHeight / distance);
-            wallTop = wallCenter - wallHeight / 2;
-            wallBottom = wallCenter + wallHeight / 2;
             
             wallTop = Math.max(0, wallTop);
             wallBottom = Math.min(screenHeight - 1, wallBottom);
+            
+            wallHeight = Math.max(1, wallBottom - wallTop);
             
             calculateTextureX();
         }
@@ -114,15 +126,19 @@ public class RayCaster {
             
             Vector2D hitPoint = ray.getPoint(distance);
             Vector2D wallStart = hitWall.getLine().start;
-            // Vector2D wallEnd = hitWall.getLine().end;
+            Vector2D wallEnd = hitWall.getLine().end;
             
-            // double wallLength = wallStart.distanceTo(wallEnd);
-            double hitPosition = wallStart.distanceTo(hitPoint);
+            Vector2D wallDirection = wallEnd.subtract(wallStart);
+            Vector2D startToHit = hitPoint.subtract(wallStart);
             
-            wallTextureX = hitPosition;
+            double t = startToHit.dot(wallDirection) / wallDirection.dot(wallDirection);
+            t = Math.max(0.0, Math.min(1.0, t));
             
-            // Не нормализуем! Пусть текстура повторяется по длине стены
-            // wallTextureX = wallTextureX - Math.floor(wallTextureX);
+            double wallLength = wallDirection.length();
+            wallTextureX = t * wallLength;
+            
+            wallTextureX = wallTextureX % 64.0;
+            if (wallTextureX < 0) wallTextureX += 64.0;
         }
         
         public boolean hasHit() {

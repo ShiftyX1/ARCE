@@ -140,9 +140,18 @@ public class Renderer {
         
         int[] frameBufferData = ((DataBufferInt) frameBuffer.getRaster().getDataBuffer()).getData();
         
-        double uCoord = column.wallTextureX / textureWidth;
+        // ИСПРАВЛЕНО: корректная нормализация U-координаты
+        double uCoord = (column.wallTextureX % textureWidth) / textureWidth;
+        if (uCoord < 0) uCoord += 1.0;
+        
+        // ИСПРАВЛЕНО: Правильное вычисление V-координат с учетом мирового масштаба
         double vStep = worldWallHeight / (wallHeight * textureHeight);
         double vStart = 0.0;
+        
+        // Если стена обрезана сверху или снизу, корректируем начальную V-координату
+        if (column.wallTop < 0) {
+            vStart += vStep * textureHeight * (-column.wallTop);
+        }
         
         double shadingFactor = Math.max(0.2, 1.0 - (column.distance / 200.0));
         
@@ -151,7 +160,9 @@ public class Renderer {
         
         for (int y = column.wallTop; y <= column.wallBottom; y++) {
             if (y >= 0 && y < screenHeight) {
-                double v = vStart + (y - column.wallTop) * vStep;
+                // ИСПРАВЛЕНО: Правильное вычисление V-координаты
+                double v = vStart + (y - Math.max(0, column.wallTop)) * vStep;
+                v = Math.max(0.0, Math.min(0.9999, v)); // Избегаем выхода за границы текстуры
                 
                 int pixelRgb = texture.getPixelRGB(uCoord, v);
                 

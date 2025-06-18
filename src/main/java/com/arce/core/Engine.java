@@ -1,3 +1,9 @@
+/*
+ * Don't know why I am doing this, but I am.
+ * 
+ * 
+ */
+
 package com.arce.core;
 
 import com.arce.logger.EngineLogger;
@@ -121,6 +127,7 @@ public class Engine {
         
         player.setMoveSpeed(config.getPlayerMoveSpeed());
         player.setTurnSpeed(config.getPlayerTurnSpeed());
+        player.setStrafeSpeed(config.getPlayerStrafeSpeed());
 
         rayCaster = new RayCaster(gameMap);
         rayCaster.setMaxRenderDistance(config.getRenderDistance());

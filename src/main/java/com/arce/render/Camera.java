@@ -35,9 +35,11 @@ public class Camera {
     }
     
     public Ray2D createRay(int screenX) {
-        double cameraX = 2.0 * screenX / screenWidth - 1.0;
+        double cameraX = 2.0 * screenX / (screenWidth - 1) - 1.0;
         
         Vector2D rayDirection = direction.add(cameraPlane.multiply(cameraX));
+        
+        rayDirection = rayDirection.normalize();
         
         return new Ray2D(position, rayDirection);
     }
